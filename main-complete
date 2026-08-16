@@ -1,0 +1,71 @@
+import sys
+import os
+import time
+
+project_path = r"C:\neurohabit"
+if project_path not in sys.path:
+    sys.path.insert(0, project_path)
+
+from modules.behavior.keyboard_monitor import KeyboardMonitor
+from modules.behavior.mouse_monitor import MouseMonitor
+from modules.data.logger import DataLogger
+
+def main():
+    print("=" * 60)
+    print("🧠 NEUROHABIT - Complete Monitor with Logger")
+    print("=" * 60)
+    
+    # راه‌اندازی DataLogger
+    logger = DataLogger()
+    
+    # راه‌اندازی مانیتورها
+    keyboard = KeyboardMonitor()
+    mouse = MouseMonitor()
+    
+    keyboard.start()
+    mouse.start()
+    
+    print("\n✅ کیبورد و ماوس در حال مانیتورینگ هستند...")
+    print("⌨️  هر چیزی تایپ کن ثبت میشه")
+    print("🖱️  هر حرکت و کلیکی ثبت میشه")
+    print("💾  داده‌ها خودکار ذخیره میشن")
+    print("\n⏹️ برای دیدن گزارش و ذخیره، Enter بزن...")
+    
+    input()
+    
+    keyboard.stop()
+    mouse.stop()
+    
+    # دریافت گزارش‌ها
+    keyboard_report = keyboard.get_report()
+    mouse_report = mouse.get_report()
+    
+    # ذخیره داده‌ها
+    print("\n💾 در حال ذخیره‌سازی داده‌ها...")
+    logger.save_keyboard_data(keyboard_report)
+    logger.save_mouse_data(mouse_report)
+    logger.save_combined_data(keyboard_report, mouse_report)
+    logger.save_csv(keyboard_report, mouse_report)
+    
+    print("\n" + "=" * 60)
+    print("📊 KEYBOARD REPORT")
+    print("=" * 60)
+    print(f"⏱️  زمان: {keyboard_report['duration_minutes']} دقیقه")
+    print(f"⌨️  کلیدها: {keyboard_report['total_keys']}")
+    print(f"📈  کلید در دقیقه: {keyboard_report['keys_per_minute']}")
+    print(f"💨  سرعت تایپ: {keyboard_report['typing_speed_wpm']} WPM")
+    
+    print("\n" + "=" * 60)
+    print("📊 MOUSE REPORT")
+    print("=" * 60)
+    print(f"⏱️  زمان: {mouse_report['duration_minutes']} دقیقه")
+    print(f"🖱️  کلیک‌ها: {mouse_report['total_clicks']}")
+    print(f"📏  مسافت کل: {mouse_report['total_distance']} پیکسل")
+    print(f"🌀  حرکت بی‌قرار: {mouse_report['restless_moves']}")
+    
+    print("\n" + "=" * 60)
+    print("✅ تمام گزارش‌ها در پوشه data/ ذخیره شدند!")
+    print("=" * 60)
+
+if __name__ == "__main__":
+    main()
